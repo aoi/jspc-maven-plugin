@@ -86,6 +86,7 @@
         <project.build.sourceVersion>1.5</project.build.sourceVersion>
         <project.build.targetVersion>1.5</project.build.targetVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <github.repo.directory>${env.HOME}/.m2/deploy</github.repo.directory>
     </properties>
     
     <dependencyManagement>
@@ -289,15 +290,12 @@
             </plugins>
         </pluginManagement>
     </build>
-    <profiles>
-        <profile>
-            <id>manual-site</id>
-            <distributionManagement>
-                <site>
-                    <id>developer.jasig</id>
-                    <url>${jasig-site-dist-base}/jspc-maven-plugin/${project.version}</url>
-                </site>
-            </distributionManagement>
-        </profile>
-    </profiles>
+    <distributionManagement>
+      <snapshotRepository>
+        <uniqueVersion>true</uniqueVersion>
+        <id>internal.repo</id>
+        <url>file:${github.repo.directory}/jspc-maven-plugin/${project.version}</url>
+        <layout>default</layout>
+      </snapshotRepository>
+    </distributionManagement>
 </project>

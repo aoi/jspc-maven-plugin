@@ -49,6 +49,7 @@ import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.apache.maven.shared.filtering.MavenFileFilterRequest;
 import org.apache.maven.shared.filtering.MavenFilteringException;
 import org.apache.maven.shared.model.fileset.FileSet;
+import org.apache.maven.shared.model.fileset.util.FileSetManager;
 import org.codehaus.mojo.jspc.compiler.JspCompiler;
 import org.codehaus.mojo.jspc.compiler.JspCompilerFactory;
 import org.codehaus.plexus.util.FileUtils;
@@ -208,10 +209,15 @@ abstract class CompilationMojoSupport extends AbstractMojo {
     @Parameter(defaultValue="true")
     boolean errorOnUseBeanInvalidClassAttribute;
 
+    @Parameter
+    String[] includes;
+
+    @Parameter
+    String[] excludes;
+
     //
     // Components
     //
-
 
     /**
      * The Maven project.
@@ -255,11 +261,25 @@ abstract class CompilationMojoSupport extends AbstractMojo {
         
         final JspCompiler jspCompiler = this.jspCompilerFactory.createJspCompiler();
 
+         
         // Setup defaults (complex, can"t init from expression)
         if (sources == null) {
+            log.debug("sources is null.");
             sources = new FileSet();
             sources.setDirectory(this.defaultSourcesDirectory.getAbsolutePath());
-            sources.setExcludes(Arrays.asList("WEB-INF/web.xml", "META-INF/**"));
+            if (includes == null) {
+                includes = new String[1];
+                includes[0] = "**/*.jsp";
+            }
+            sources.setIncludes(Arrays.asList(includes));
+            List<String> excludesList = new ArrayList<String>();
+            excludesList.addAll(Arrays.asList("WEB-INF/web.xml", "META-INF/**"));
+            if (excludes != null) {
+                excludesList.addAll(Arrays.asList(excludes));
+            }
+            sources.setExcludes(excludesList);
+        } else {
+            log.debug("sources is not null.");
         }
 
         jspCompiler.setWebappDirectory(sources.getDirectory());
@@ -287,17 +307,13 @@ abstract class CompilationMojoSupport extends AbstractMojo {
         
         final List<File> jspFiles;
         if (sources.getIncludes() != null) {
-            //Always need to get a full list of JSP files as incremental builds would result in an invalid web.xml
-            final Scanner scanner = this.buildContext.newScanner(new File(sources.getDirectory()), true);
-            scanner.setIncludes(sources.getIncludesArray());
-            scanner.setExcludes(sources.getExcludesArray());
-            scanner.addDefaultExcludes();
-            
-            scanner.scan();
-            
-            final String[] includes = scanner.getIncludedFiles();
-            jspFiles = new ArrayList<File>(includes.length);
-            for (final String it : includes) {
+            log.debug("IncludesFiles: " + String.join(",", this.sources.getIncludesArray()));
+
+            FileSetManager fileSetManager = new FileSetManager();
+       	    final String[] incs = fileSetManager.getIncludedFiles(sources);
+            jspFiles = new ArrayList<File>(incs.length);
+            for (final String it : incs) {
+                log.debug("add " + it);
                 jspFiles.add(new File(sources.getDirectory(), it));
             }
         }
