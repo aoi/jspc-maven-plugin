@@ -117,31 +117,65 @@
     </dependencies>
     
     <build>
-        <plugins>
-            <plugin>
-                <groupId>com.mycila.maven-license-plugin</groupId>
-                <artifactId>maven-license-plugin</artifactId>
-                <configuration>
-                   <skip>true</skip>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-plugin-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.jasig.maven</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <configuration>
-                    <defaultMergePolicy>MERGE</defaultMergePolicy>
-                    <reportPlugins combine.children="append">
-                        <plugin>
-                            <artifactId>maven-plugin-plugin</artifactId>
-                            <version>3.2</version>
-                        </plugin>
-                    </reportPlugins>
-                </configuration>
-            </plugin>
-        </plugins>
+    	<pluginManagement>
+	        <plugins>
+	            <plugin>
+	                <groupId>com.mycila.maven-license-plugin</groupId>
+	                <artifactId>maven-license-plugin</artifactId>
+	                <configuration>
+	                   <skip>true</skip>
+	                </configuration>
+	            </plugin>
+	            <plugin>
+	                <groupId>org.apache.maven.plugins</groupId>
+	                <artifactId>maven-plugin-plugin</artifactId>
+	            </plugin>
+	            <plugin>
+	                <groupId>org.jasig.maven</groupId>
+	                <artifactId>maven-site-plugin</artifactId>
+	                <configuration>
+	                    <defaultMergePolicy>MERGE</defaultMergePolicy>
+	                    <reportPlugins combine.children="append">
+	                        <plugin>
+	                            <artifactId>maven-plugin-plugin</artifactId>
+	                            <version>3.2</version>
+	                        </plugin>
+	                    </reportPlugins>
+	                </configuration>
+	            </plugin>
+	            <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+	            <plugin>
+	            	<groupId>org.eclipse.m2e</groupId>
+	            	<artifactId>lifecycle-mapping</artifactId>
+	            	<version>1.0.0</version>
+	            	<configuration>
+	            		<lifecycleMappingMetadata>
+	            			<pluginExecutions>
+	            				<pluginExecution>
+	            					<pluginExecutionFilter>
+	            						<groupId>
+	            							org.apache.maven.plugins
+	            						</groupId>
+	            						<artifactId>
+	            							maven-plugin-plugin
+	            						</artifactId>
+	            						<versionRange>
+	            							[3.2,)
+	            						</versionRange>
+	            						<goals>
+	            							<goal>descriptor</goal>
+	            							<goal>helpmojo</goal>
+	            						</goals>
+	            					</pluginExecutionFilter>
+	            					<action>
+	            						<ignore></ignore>
+	            					</action>
+	            				</pluginExecution>
+	            			</pluginExecutions>
+	            		</lifecycleMappingMetadata>
+	            	</configuration>
+	            </plugin>
+	        </plugins>
+        </pluginManagement>
     </build>
 </project>
